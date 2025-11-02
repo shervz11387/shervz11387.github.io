@@ -11,6 +11,7 @@
       --card:#ffffff;
       --muted:#6b7280;
       --accent:#6c63ff;
+      --accent2:#8f7bff;
       --glass: rgba(255,255,255,0.6);
       --shadow: 0 8px 30px rgba(20,24,40,0.08);
       --radius:18px;
@@ -80,8 +81,38 @@
 
     .download-bar small{color:var(--muted);font-size:13px}
 
+    .btn{
+      appearance:none;
+      border:0;
+      padding:10px 16px;
+      border-radius:999px;
+      font-weight:600;
+      cursor:pointer;
+      background:linear-gradient(90deg,var(--accent), var(--accent2));
+      color:white;
+      box-shadow: 0 6px 18px rgba(108,99,255,0.25);
+      transition: all 0.25s ease;
+    }
+
+    .btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 25px rgba(108,99,255,0.35);
+    }
+
+    .btn.secondary{
+      background:transparent;
+      color:var(--accent);
+      border:2px solid var(--accent);
+      box-shadow:none;
+    }
+
+    .btn.secondary:hover{
+      background:var(--accent);
+      color:white;
+    }
+
     @media (max-width:880px){
-      .download-bar{left:14px;transform:none;width:calc(100% - 28px);justify-content:space-between}
+      .download-bar{left:14px;transform:none;width:calc(100% - 28px);justify-content:space-between;flex-wrap:wrap}
       .image-frame{min-height:320px}
     }
   </style>
@@ -92,22 +123,24 @@
       <img id="photo" src="img/preview.jpg" alt="Preview Image"/>
     </div>
 
-    <div class="meta">Displayed image: <strong>img/preview.jpg</strong></div>
+    <div class="meta">Displayed image: <strong>Preview.jpg</strong></div>
   </div>
 
   <div class="download-bar" role="region" aria-label="download bar">
     <div style="display:flex;flex-direction:column">
-      <small id="filename">img/preview.jpg</small>
+      <small id="filename">Preview.jpg</small>
       <small style="font-weight:600">Ready to download</small>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
-      <button class="btn" id="downloadFixed">Download image</button>
+      <button class="btn" id="downloadFixed">Download Image</button>
+      <button class="btn secondary" id="openNew">Open in New Tab</button>
     </div>
   </div>
 
   <script>
     const photo = document.getElementById('photo');
     const downloadFixed = document.getElementById('downloadFixed');
+    const openNew = document.getElementById('openNew');
 
     async function downloadImage(imgSrc, name){
       if(!imgSrc) return;
@@ -134,6 +167,10 @@
     }
 
     downloadFixed.addEventListener('click', ()=>downloadImage(photo.src, 'preview.jpg'));
+
+    openNew.addEventListener('click', ()=>{
+      window.open(photo.src, '_blank', 'noopener');
+    });
   </script>
 </body>
-</html>
+  </html>
