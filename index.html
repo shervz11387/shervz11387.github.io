@@ -1,1 +1,321 @@
-Hello world
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Minimal Image Display — Download</title>
+  <style>
+    :root{
+      --bg1:#f7f8fc;
+      --bg2:#eef2ff;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#6c63ff;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 8px 30px rgba(20,24,40,0.08);
+      --radius:18px;
+      --gap:24px;
+      --maxw:900px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px 20px;
+      color:#0f172a;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:var(--maxw);
+      display:grid;
+      grid-template-columns:1fr 360px;
+      gap:var(--gap);
+      align-items:start;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.9), var(--card));
+      border-radius:var(--radius);
+      padding:28px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(6px) saturate(120%);
+      border: 1px solid rgba(99,102,241,0.06);
+    }
+
+    .hero{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    h1{margin:0;font-size:20px;letter-spacing:-0.01em}
+    p.lead{margin:0;color:var(--muted);font-size:14px}
+
+    .image-frame{
+      margin-top:8px;
+      background: linear-gradient(135deg,#ffffff,#fbfbff);
+      border-radius:14px;
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:420px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 6px 22px rgba(15,23,42,0.04);
+      overflow:hidden;
+    }
+
+    img#photo{
+      max-width:100%;
+      max-height:100%;
+      border-radius:10px;
+      object-fit:contain;
+      display:block;
+      box-shadow: 0 6px 20px rgba(12,18,34,0.06);
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:12px;
+    }
+
+    .btn{
+      appearance:none;
+      border:0;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+      background:linear-gradient(90deg,var(--accent), #8f7bff);
+      color:white;
+      box-shadow: 0 6px 18px rgba(108,99,255,0.12);
+    }
+
+    .btn.secondary{
+      background:transparent;
+      color:var(--accent);
+      border:1px solid rgba(108,99,255,0.12);
+      font-weight:600;
+    }
+
+    .meta{
+      font-size:13px;color:var(--muted);margin-top:6px
+    }
+
+    /* right column */
+    .sidebar{display:flex;flex-direction:column;gap:16px}
+    .card.small{padding:18px}
+    label.file{
+      display:block;
+      background:linear-gradient(180deg,rgba(99,102,241,0.06), rgba(99,102,241,0.03));
+      padding:10px 12px;border-radius:10px;
+      text-align:center;cursor:pointer;border:1px dashed rgba(99,102,241,0.12);
+      color:var(--accent);font-weight:600
+    }
+    input[type=file]{display:none}
+
+    .thumb{width:100%;height:130px;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff,#f6f7ff);}
+    .thumb img{max-width:100%;max-height:100%;object-fit:cover}
+
+    /* footer download bar fixed */
+    .download-bar{
+      position:fixed;left:50%;transform:translateX(-50%);
+      bottom:22px;background:var(--glass);border-radius:999px;padding:10px 18px;box-shadow:0 12px 30px rgba(9,10,22,0.12);backdrop-filter: blur(8px);
+      display:flex;gap:12px;align-items:center;border:1px solid rgba(15,23,42,0.04)
+    }
+
+    .download-bar small{color:var(--muted);font-size:13px}
+
+    @media (max-width:880px){
+      .wrap{grid-template-columns:1fr;}
+      .download-bar{left:14px;transform:none;width:calc(100% - 28px);justify-content:space-between}
+      .image-frame{min-height:320px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card hero">
+      <div>
+        <h1>Minimal Image Display</h1>
+        <p class="lead">A clean, minimal viewer with an accessible download button pinned at the bottom.</p>
+      </div>
+
+      <div class="image-frame" id="frame">
+        <!-- Default inline SVG placeholder as data URL to avoid external requests -->
+        <img id="photo" src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%221200%22 height=%22700%22 viewBox=%220 0 1200 700%22><defs><linearGradient id=%22g%22 x1=%220%22 x2=%221%22 y1=%220%22 y2=%221%22><stop offset=%220%25%22 stop-color=%22%236c63ff%22/><stop offset=%22100%25%22 stop-color=%22%238f7bff%22/></linearGradient></defs><rect width=%22120%25%22 height=%22120%25%22 fill=%22%23f8f8ff%22/><g transform=%22translate(60,80)%22><rect rx=%2214%22 width=%201080 height=%20540 fill=%22url(%23g)%22 opacity=%220.12%22/><text x=%22540%22 y=%22270%22 font-size=%2232%22 text-anchor=%22middle%22 fill=%22%236b7280%22 font-family=%22Arial%22>Drop or upload an image — then press Download</text></g></svg>' alt="placeholder image"/>
+      </div>
+
+      <div class="controls">
+        <label class="file" for="fileInput">Replace image</label>
+        <input id="fileInput" type="file" accept="image/*">
+
+        <button class="btn" id="downloadBtn">Download</button>
+        <button class="btn secondary" id="fitBtn">Fit / Cover</button>
+      </div>
+
+      <div class="meta">Tip: Upload a photo or paste an image URL into the browser address bar to preview. The download will save the currently displayed image.</div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="card small">
+        <strong>Preview</strong>
+        <div class="thumb" id="thumb"><img src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22120%22 viewBox=%220 0 400 120%22><rect width=%22400%22 height=%22120%22 fill=%22%23f6f7ff%22/><text x=%22200%22 y=%2268%22 alignment-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 fill=%22%236b7280%22>Thumbnail</text></svg>' alt="thumb"></div>
+      </div>
+
+      <div class="card small">
+        <strong>Actions</strong>
+        <div style="margin-top:10px;display:flex;gap:10px;flex-direction:column">
+          <button class="btn" id="copyUrl">Copy image URL</button>
+          <button class="btn secondary" id="openNew">Open image in new tab</button>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <div class="download-bar" role="region" aria-label="download bar">
+    <div style="display:flex;flex-direction:column">
+      <small id="filename">placeholder.svg</small>
+      <small style="font-weight:600">Ready to download</small>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn" id="downloadFixed">Download image</button>
+      <button class="btn secondary" id="hideBar">Hide</button>
+    </div>
+  </div>
+
+  <script>
+    const photo = document.getElementById('photo');
+    const fileInput = document.getElementById('fileInput');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadFixed = document.getElementById('downloadFixed');
+    const thumb = document.getElementById('thumb').querySelector('img');
+    const filenameLabel = document.getElementById('filename');
+    const copyUrl = document.getElementById('copyUrl');
+    const openNew = document.getElementById('openNew');
+    const fitBtn = document.getElementById('fitBtn');
+    const hideBar = document.getElementById('hideBar');
+
+    let currentName = 'placeholder.svg';
+
+    // Helper: update thumbnail and filename
+    function updateMeta(src, name){
+      thumb.src = src;
+      filenameLabel.textContent = name || 'image';
+      currentName = name || 'image';
+    }
+
+    // handle file uploads
+    fileInput.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      const url = URL.createObjectURL(f);
+      photo.src = url;
+      updateMeta(url, f.name);
+    });
+
+    // clicking the Replace image label triggers file input
+    document.querySelector('label.file').addEventListener('click', ()=>fileInput.click());
+
+    // Fit / Cover toggle
+    let fit = true;
+    fitBtn.addEventListener('click', ()=>{
+      fit = !fit;
+      photo.style.objectFit = fit ? 'contain' : 'cover';
+      fitBtn.textContent = fit ? 'Fit / Cover' : 'Cover / Fit';
+    });
+
+    // Robust download: try to fetch then download, fallback to anchor
+    async function downloadImage(imgSrc, name){
+      // If the src is a data URL or blob: use direct anchor
+      if(!imgSrc) return;
+      try{
+        if(imgSrc.startsWith('data:')){
+          const a = document.createElement('a');
+          a.href = imgSrc;
+          a.download = name || 'image';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          return;
+        }
+
+        // try to fetch the image and convert to blob (works when CORS allows)
+        const resp = await fetch(imgSrc, {mode:'cors'});
+        if(!resp.ok) throw new Error('failed to fetch');
+        const blob = await resp.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = name || 'image';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blobUrl);
+      }catch(err){
+        // fallback: open source in new tab (user can save manually)
+        console.warn('download fallback', err);
+        const a = document.createElement('a');
+        a.href = imgSrc;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.click();
+      }
+    }
+
+    downloadBtn.addEventListener('click', ()=>downloadImage(photo.src, currentName));
+    downloadFixed.addEventListener('click', ()=>downloadImage(photo.src, currentName));
+
+    copyUrl.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(photo.src);
+        copyUrl.textContent = 'Copied!';
+        setTimeout(()=>copyUrl.textContent='Copy image URL',1200);
+      }catch(e){
+        copyUrl.textContent = 'Failed';
+        setTimeout(()=>copyUrl.textContent='Copy image URL',1200);
+      }
+    });
+
+    openNew.addEventListener('click', ()=>{
+      window.open(photo.src, '_blank', 'noopener');
+    });
+
+    hideBar.addEventListener('click', ()=>{
+      document.querySelector('.download-bar').style.display='none';
+    });
+
+    // update meta as image loads or changes
+    photo.addEventListener('load', ()=>{
+      // try to guess filename from src
+      try{
+        const url = new URL(photo.src);
+        const p = url.pathname.split('/').pop() || '';
+        updateMeta(photo.src, p || currentName);
+      }catch(e){
+        // data URL or blob
+        updateMeta(photo.src, currentName);
+      }
+    });
+
+    // support paste (paste an image URL) — quick convenience
+    window.addEventListener('paste', (ev)=>{
+      const text = (ev.clipboardData || window.clipboardData).getData('text');
+      if(text && (text.startsWith('http') || text.startsWith('data:'))){
+        photo.src = text;
+        updateMeta(text, text.split('/').pop() || 'pasted-image');
+      }
+    });
+
+  </script>
+</body>
+  </html>
+  
