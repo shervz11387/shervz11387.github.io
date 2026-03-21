@@ -1,174 +1,345 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Image Download</title>
-  <style>
-    :root{
-      --bg1:#f7f8fc;
-      --bg2:#eef2ff;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --accent:#6c63ff;
-      --accent2:#8f7bff;
-      --glass: rgba(255,255,255,0.6);
-      --shadow: 0 8px 30px rgba(20,24,40,0.08);
-      --radius:18px;
-      --maxw:900px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,var(--bg1),var(--bg2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:40px 20px;
-      color:#0f172a;
-    }
+<link rel="icon" type="image/x-icon" href="https://winsangalang.github.io/favicon.ico">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="My Finds" />
+    <meta property="og:description" content="Check out my this cool products." />
+    <meta property="og:image" content="https://winsangalang.github.io/thumb/myfinds.jpg" />
+    <meta property="og:url" content="https://winsangalang.github.io/myfinds" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="627" />
+  <title>MyFinds</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #d3d4de;
+  }
 
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.9), var(--card));
-      border-radius:var(--radius);
-      padding:28px;
-      box-shadow:var(--shadow);
-      backdrop-filter: blur(6px) saturate(120%);
-      border: 1px solid rgba(99,102,241,0.06);
-      max-width:var(--maxw);
-      width:100%;
-    }
+  /* Navigation bar */
+  .navbar {
+    background-color: #333;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    height: 50px;
+  }
 
-    .hero{
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-    }
+  .navbar a, .navbar button {
+    color: white;
+    text-decoration: none;
+    padding: 14px 16px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
 
-    .image-frame{
-      margin-top:8px;
-      background: linear-gradient(135deg,#ffffff,#fbfbff);
-      border-radius:14px;
-      padding:14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:420px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 6px 22px rgba(15,23,42,0.04);
-      overflow:hidden;
-    }
+  .navbar a:hover, .navbar button:hover {
+    background-color: #575757;
+  }
 
-    img#photo{
-      max-width:100%;
-      max-height:100%;
-      border-radius:10px;
-      object-fit:contain;
-      display:block;
-      box-shadow: 0 6px 20px rgba(12,18,34,0.06);
-    }
+  /* Side panel (category window) */
+  .side-panel {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background-color: white;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 60px;
+  }
 
-    .meta{
-      font-size:13px;color:var(--muted);margin-top:6px;text-align:center
-    }
+  .side-panel a {
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #333;
+    display: block;
+    transition: 0.2s;
+  }
 
-    .download-bar{
-      position:fixed;left:50%;transform:translateX(-50%);
-      bottom:22px;background:var(--glass);border-radius:999px;padding:10px 18px;box-shadow:0 12px 30px rgba(9,10,22,0.12);backdrop-filter: blur(8px);
-      display:flex;gap:12px;align-items:center;border:1px solid rgba(15,23,42,0.04)
-    }
+  .side-panel a:hover {
+    background-color: #ddd;
+  }
 
-    .download-bar small{color:var(--muted);font-size:13px}
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+  }
 
-    .btn{
-      appearance:none;
-      border:0;
-      padding:10px 16px;
-      border-radius:999px;
-      font-weight:600;
-      cursor:pointer;
-      background:linear-gradient(90deg,var(--accent), var(--accent2));
-      color:white;
-      box-shadow: 0 6px 18px rgba(108,99,255,0.25);
-      transition: all 0.25s ease;
-    }
+  .content {
+    padding: 20px;
+  }
 
-    .btn:hover{
-      transform:translateY(-2px);
-      box-shadow:0 10px 25px rgba(108,99,255,0.35);
-    }
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
 
-    .btn.secondary{
-      background:transparent;
-      color:var(--accent);
-      border:2px solid var(--accent);
-      box-shadow:none;
-    }
+  .product {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
 
-    .btn.secondary:hover{
-      background:var(--accent);
-      color:white;
-    }
+  .product img {
+    max-width: 100%;
+    border-radius: 8px;
+  }
 
-    @media (max-width:880px){
-      .download-bar{left:14px;transform:none;width:calc(100% - 28px);justify-content:space-between;flex-wrap:wrap}
-      .image-frame{min-height:320px}
-    }
-  </style>
+  .product-info {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 10px;
+  }
+
+  .icon-links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .icon-links a img {
+    width: 28px;
+    height: 28px;
+    transition: transform 0.2s ease;
+  }
+
+  .icon-links a:hover img {
+    transform: scale(1.1);
+  }
+  
+/* Mobile Portrait (small phones) */
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  }
+}
+
+/* Mobile Landscape */
+@media (min-width: 481px) and (max-width: 767px) and (orientation: landscape) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  }
+}
+
+/* Tablet (portrait + landscape) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  }
+  .navbar {
+    padding: 0 20px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  .product-grid {
+    grid-template-columns: repeat(6, 1fr); /* 6 columns */
+  }
+  .navbar {
+    padding: 0 30px;
+  }
+}
+
+</style>
 </head>
-<body>
-  <div class="card hero">
-    <div class="image-frame" id="frame">
-      <img id="photo" src="img/preview.jpg" alt="Preview Image"/>
-    </div>
+<body onload="filterProducts('all')">
 
-    <div class="meta">Displayed image: <strong>Preview.jpg</strong></div>
+<!-- Navigation bar -->
+<div class="navbar">
+  <a href="#" onclick="filterProducts('all')">Home</a>
+  <button onclick="openPanel()">Categories</button>
+<a href="https://www.tiktok.com/@win11387?_t=ZS-8yo5CAVr6tF&_r=1" target="_blank">Contact</a>
+</div>
+
+<!-- Side panel -->
+<div id="categoryPanel" class="side-panel">
+  <span class="close-btn" onclick="closePanel()">×</span>
+  
+  <!-- Electronics & Gadgets -->
+  <a href="#" onclick="filterProducts('electronics'); closePanel()">Electronics</a>
+  <a href="#" onclick="filterProducts('mobiles'); closePanel()">Mobile Phones</a>
+  <a href="#" onclick="filterProducts('gadgets'); closePanel()">Smart Gadgets & Accessories</a>
+  <a href="#" onclick="filterProducts('computers'); closePanel()">Computers & Laptops</a>
+  
+  <!-- Beauty & Personal Care -->
+  <a href="#" onclick="filterProducts('beauty'); closePanel()">Beauty & Personal Care</a>
+  
+  <!-- Fashion -->
+  <a href="#" onclick="filterProducts('fashion'); closePanel()">Fashion</a>
+  
+  <!-- Pet Supplies -->
+  <a href="#" onclick="filterProducts('pets'); closePanel()">Pet Supplies</a>
+
+  <!-- Home & Living -->
+  <a href="#" onclick="filterProducts('household'); closePanel()">Household Essentials</a>
+
+  <!-- Kids & Babies -->
+  <a href="#" onclick="filterProducts('kids'); closePanel()">Kids & Baby Products</a>
+
+  <!-- Others -->
+  <a href="#" onclick="filterProducts('sports'); closePanel()">Sports & Outdoors</a>
+  <a href="#" onclick="filterProducts('office supplies'); closePanel()">Stationery & Office Supplies</a>
+  <a href="#" onclick="filterProducts('health'); closePanel()">Health & Wellness</a>
+</div>
+
+
+<div class="content">
+<h1 id="page-title">My Finds</h1>
+<div class="product-grid">
+
+<!-- stationery & office supplies -->
+  <div class="product" data-category="office supplies">
+    <a href="https://collshp.com/sabosan" target="_blank">
+    <img src="https://winsangalang.github.io/img/storefront.jpg" alt=""></a>
+    <div class="product-info">
+      <h3>My Store</h3>
+    </div>
+  </div>
+  
+  <div class="product" data-category="household">
+    <a href="https://s.shopee.ph/BPBs7F5td" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-81ztl-mhlqg7hy1urp93@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Full Steel <br>3-Door Wardrobe</h3>
+    </div>
+  </div>
+  
+  <div class="product" data-category="household">
+    <a href="https://s.shopee.ph/4qB1OwfMIx" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-81zto-mfjrn8z4hzwr7c@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Full Steel <br>3-Door Wardrobe<br>W/ Mirror</h3>
+    </div>
+  </div>
+  
+  <div class="product" data-category="household">
+    <a href="https://s.shopee.ph/8phAD6F2Ci" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-81ztm-mfjsclrigzym64@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Full Steel <br>3-Door Wardrobe<br>Granite W/ Mirror</h3>
+    </div>
+  </div>
+  
+  <div class="product" data-category="household">
+    <a href="https://s.shopee.ph/5fk8R6IP0m" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-81zti-mkgrhcsarthhc5@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Full Steel <br>4-Door Wardrobe</h3>
+    </div>
+  </div>
+  
+  <div class="product" data-category="office supplies">
+    <a href="https://ph.shp.ee/oo6z6mi?smtt=0.0.9" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-7r98u-ly7qkdgn239a18@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Cuyi PET Sheet (Glossy)</h3>
+    </div>
+  </div>
+  
+  <div class="product" data-category="office supplies">
+  <a href="https://ph.shp.ee/pz8ou8z?smtt=0.0.9" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-7qula-lisgc363tmccdf@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Stainless Ball chain</h3>
+    </div>
+  </div>
+  
+  <div class="product" data-category="office supplies">
+  <a href="https://ph.shp.ee/hqb2skp?smtt=0.0.9" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/sg-11134201-7rfez-m3zusiqd8joi16@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Colored Ball Chain</h3>
+    </div>
+  </div>
+  
+  <!-- Gadgets -->
+<div class="product" data-category="gadgets">
+    <a href="https://ph.shp.ee/w0bqr1u?smtt=0.0.9" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-7rasm-m9dy43gb0y7nd9@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>R36S Game Console</h3>
+    </div>
+  </div>
+  
+  <!-- Electronics -->
+  <div class="product" data-category="electronics">
+    <a href="https://ph.shp.ee/jhor81w?smtt=0.0.9" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-7rase-m8ea69k4vrmmcb@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Yamaha Audio Mixer</h3>
+    </div>
   </div>
 
-  <div class="download-bar" role="region" aria-label="download bar">
-    <div style="display:flex;flex-direction:column">
-       </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button class="btn" id="downloadFixed">Download Image</button>
-      <button class="btn secondary" id="openNew">Open in New Tab</button>
+  <div class="product" data-category="computers">
+    <a href="https://ph.shp.ee/a97usea?smtt=0.0.9" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/9d018661dd6350ef5cd6a2295dcc90a7@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Acer Aspire V5-471
+      <br>AL12A32 Battery</h3>
     </div>
   </div>
+  <!-- Computers -->
+  <div class="product" data-category="computers">
+     <a href="https://ph.shp.ee/axkekkx?smtt=0.0.9" target="_blank">
+    <img src="https://down-ph.img.susercontent.com/file/ph-11134207-7ra0i-mb6hmb03gr5d4b@resize_w1200_nl.webp" alt=""></a>
+    <div class="product-info">
+      <h3>Inplay Desktop PC
+      <br>Power Supply</h3>
+      
+    </div>
+  </div>
+  
+  
+  
+</div>
+</div>
 
-  <script>
-    const photo = document.getElementById('photo');
-    const downloadFixed = document.getElementById('downloadFixed');
-    const openNew = document.getElementById('openNew');
+<script>
+function openPanel() {
+  document.getElementById("categoryPanel").style.width = "250px";
+}
 
-    async function downloadImage(imgSrc, name){
-      if(!imgSrc) return;
-      try{
-        const resp = await fetch(imgSrc);
-        if(!resp.ok) throw new Error('failed to fetch');
-        const blob = await resp.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = name || 'image';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(blobUrl);
-      }catch(err){
-        console.warn('download fallback', err);
-        const a = document.createElement('a');
-        a.href = imgSrc;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        a.click();
-      }
+function closePanel() {
+  document.getElementById("categoryPanel").style.width = "0";
+}
+
+function filterProducts(category) {
+  const products = document.querySelectorAll('.product');
+  const title = document.getElementById('page-title');
+
+  products.forEach(product => {
+    if (category === 'all' || product.dataset.category === category) {
+      product.style.display = 'flex';
+    } else {
+      product.style.display = 'none';
     }
+  });
 
-    downloadFixed.addEventListener('click', ()=>downloadImage(photo.src, 'preview.jpg'));
+  title.textContent = category === 'all' ? 'My Finds' : `${category.charAt(0).toUpperCase() + category.slice(1)}`;
+}
+</script>
 
-    openNew.addEventListener('click', ()=>{
-      window.open(photo.src, '_blank', 'noopener');
-    });
-  </script>
 </body>
-  </html>
+</html>
